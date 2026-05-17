@@ -6,9 +6,11 @@ interface ProgressBarProps {
   onSeek: (pct: number) => void;
 }
 
-function fmt(s: number): string {
-  if (!isFinite(s)) return '0:00';
-  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function formatTime(seconds: number): string {
+  if (!isFinite(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${String(secs).padStart(2, '0')}`;
 }
 
 export function ProgressBar({ currentTime, duration, onSeek }: ProgressBarProps) {
@@ -26,9 +28,9 @@ export function ProgressBar({ currentTime, duration, onSeek }: ProgressBarProps)
         <div className="bar-fill" style={{ width: `${pct}%` }} />
       </div>
       <div className="time">
-        <span className="current">{fmt(currentTime)}</span>
+        <span className="current">{formatTime(currentTime)}</span>
         <span className="sep">/</span>
-        <span className="total">{fmt(duration)}</span>
+        <span className="total">{formatTime(duration)}</span>
       </div>
     </>
   );

@@ -2,10 +2,9 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
+import { EASE, ENTER_DELAY } from './transitions';
 import type { Direction, Track } from './types';
 import { useDiscSpin } from './useDiscSpin';
-
-const SWAP_EASING = [0.22, 1, 0.36, 1] as const;
 
 interface DiscProps {
   track: Track;
@@ -47,14 +46,14 @@ export function Disc({ track, isPlaying, isZoomed, direction, onZoomToggle }: Di
               scale: 1,
               transition: {
                 duration: 0.38,
-                ease: [...SWAP_EASING],
-                delay: direction ? 0.31 : 0,
+                ease: [...EASE],
+                delay: direction ? ENTER_DELAY : 0,
               },
             }}
             exit={{
               opacity: 0,
               scale: 0.9,
-              transition: { duration: 0.32, ease: [...SWAP_EASING] },
+              transition: { duration: 0.32, ease: [...EASE] },
             }}
           />
         </AnimatePresence>

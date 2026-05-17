@@ -9,7 +9,7 @@ const FFT_SIZE = 256;
 export function useAudioAnalyser(audioRef: React.RefObject<HTMLAudioElement | null>) {
   const ctxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
-  const dataRef = useRef<Uint8Array>(new Uint8Array(FFT_SIZE / 2));
+  const dataRef = useRef<Uint8Array<ArrayBuffer>>(new Uint8Array(FFT_SIZE / 2));
   const connectedRef = useRef(false);
 
   const connect = useCallback(() => {

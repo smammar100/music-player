@@ -98,44 +98,43 @@ export function useAudioPlayer(tracks: Track[]) {
   const next = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const pos = state.order.indexOf(state.currentIndex);
-    const np = pos + 1;
-    if (np >= state.order.length) {
-      if (state.loopMode === 'all') {
-        loadTrack(state.order[0], !audio.paused, 'next');
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    const currentPos = state.order.indexOf(state.currentIndex);
+    const nextPos = currentPos + 1;
+    const atEnd = nextPos >= state.order.length;
+
+    if (atEnd && state.loopMode !== 'all') {
+      audio.pause();
+      audio.currentTime = 0;
       return;
     }
-    loadTrack(state.order[np], !audio.paused, 'next');
+    const target = atEnd ? state.order[0] : state.order[nextPos];
+    loadTrack(target, !audio.paused, 'next');
   }, [state.order, state.currentIndex, state.loopMode, loadTrack]);
 
   const prev = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    // Past 3s, "previous" restarts the current track instead of skipping back.
     if (audio.currentTime > 3) {
       audio.currentTime = 0;
       return;
     }
-    const pos = state.order.indexOf(state.currentIndex);
-    const pp = pos - 1;
-    if (pp < 0) {
-      if (state.loopMode === 'all') {
-        loadTrack(state.order[state.order.length - 1], !audio.paused, 'prev');
-      } else {
-        audio.currentTime = 0;
-      }
+    const currentPos = state.order.indexOf(state.currentIndex);
+    const prevPos = currentPos - 1;
+    const atStart = prevPos < 0;
+
+    if (atStart && state.loopMode !== 'all') {
+      audio.currentTime = 0;
       return;
     }
-    loadTrack(state.order[pp], !audio.paused, 'prev');
+    const target = atStart ? state.order[state.order.length - 1] : state.order[prevPos];
+    loadTrack(target, !audio.paused, 'prev');
   }, [state.order, state.currentIndex, state.loopMode, loadTrack]);
 
-  const seek = useCallback((pct: number) => {
+  const seek = useCallback((ratio: number) => {
     const audio = audioRef.current;
     if (!audio || !audio.duration) return;
-    audio.currentTime = pct * audio.duration;
+    audio.currentTime = ratio * audio.duration;
   }, []);
 
   const toggleShuffle = useCallback(() => {

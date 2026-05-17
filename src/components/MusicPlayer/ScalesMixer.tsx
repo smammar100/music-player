@@ -17,19 +17,18 @@ const BAND_RANGES: [number, number][] = [
 const COLS = 10;
 const ROWS = 10;
 
-// GSAP-equivalent sine easings
 const sineOut = (x: number) => Math.sin((x * Math.PI) / 2);
 const sineIn = (x: number) => 1 - Math.cos((x * Math.PI) / 2);
 const sineInOut = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-// Part A: column group y bob — 0 -> 11, dur 1.5s, sine.inOut, stagger amount 3, yoyo
+// Part A: each column group bobs vertically 0 → 11px, 1.5s, eased, staggered, ping-ponging.
 const PART_A_DUR = 1.5;
 const PART_A_TO = 11;
 const PART_A_STEP = 3 / (COLS - 1);
 
-// Part B: circle wave — scale 0.133 -> 0.8, dur 1s, sine out / yoyo sine in
+// Part B: each circle rides a wave, scaling 0.133 → 0.8 over 1s, ping-ponging.
 const PART_B_DUR = 1;
 const SCALE_FROM = 0.133;
 const SCALE_TO = 0.8;
@@ -70,7 +69,7 @@ export function ScalesMixer({ isPlaying, getFrequencyData }: ScalesMixerProps) {
   const circleRefs = useRef<(SVGCircleElement | null)[][]>(
     Array.from({ length: COLS }, () => [])
   );
-  // tl.play(50): start the timeline 50s in so it opens mid-animation
+  // Start 50s in so the grid opens mid-animation rather than from rest.
   const tRef = useRef(50);
 
   useAnimationFrame((_, delta) => {
@@ -89,7 +88,7 @@ export function ScalesMixer({ isPlaying, getFrequencyData }: ScalesMixerProps) {
         energy = Math.sqrt(sum / (binEnd - binStart) / 255);
       }
 
-      // Energy modulates amplitude but the sssscales wave keeps flowing,
+      // Energy scales amplitude only; the wave keeps flowing regardless,
       // so the pattern always forms — louder audio just pumps it harder.
       const bobGain = freqData ? 0.4 + energy : 1;
       const scaleGain = freqData ? 0.5 + energy : 1;
